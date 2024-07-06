@@ -417,6 +417,9 @@ in with passthru; stdenv.mkDerivation (finalAttrs: {
     (enableFeature enableGIL "gil")
   ] ++ optionals enableOptimizations [
     "--enable-optimizations"
+  ] ++ optionals (stdenv.isDarwin && configd == null) [
+    # Make conditional on Darwin for now to avoid causing Linux rebuilds.
+    "py_cv_module__scproxy=n/a"
   ] ++ optionals (sqlite != null) [
     "--enable-loadable-sqlite-extensions"
   ] ++ optionals (libxcrypt != null) [
@@ -658,7 +661,7 @@ in with passthru; stdenv.mkDerivation (finalAttrs: {
     homepage = "https://www.python.org";
     changelog = let
       majorMinor = versions.majorMinor version;
-      dashedVersion = replaceStrings [ "." "a" ] [ "-" "-alpha-" ] version;
+      dashedVersion = replaceStrings [ "." "a" "b" ] [ "-" "-alpha-" "-beta-" ] version;
     in
       if sourceVersion.suffix == "" then
         "https://docs.python.org/release/${version}/whatsnew/changelog.html"
